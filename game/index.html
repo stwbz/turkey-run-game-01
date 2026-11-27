@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gobble Gambit — A Turkey's Thanksgiving Breakout</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #241a12; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .hud { position: fixed; inset: 0; pointer-events: none; color: #fdf3e0; z-index: 5; }
+  .hud * { box-sizing: border-box; }
+  .hud.title-mode .panel, .hud.title-mode .progress, .hud.title-mode .banner, .hud.title-mode .warn { display: none; }
+  .panel { position: absolute; background: rgba(24, 14, 8, 0.72); border: 1px solid rgba(255, 210, 120, 0.35); border-radius: 8px; padding: 10px 14px; }
+  .top-left { top: 14px; left: 14px; min-width: 240px; }
+  .top-right { top: 14px; right: 14px; min-width: 230px; text-align: right; }
+  .hud-title { font-weight: 800; font-size: 15px; letter-spacing: 0.1em; color: #ffb347; }
+  .hud-line { font-size: 14px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .hud-label { font-size: 11px; letter-spacing: 0.1em; color: #d8b98a; margin-right: 6px; }
+  #hud-hearts { color: #ff5a4a; letter-spacing: 0.1em; }
+  #hud-hearts.low { animation: pulse 0.7s infinite; }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+  #hud-gap.close { color: #ff5a4a; font-weight: 700; }
+  .bar-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; justify-content: flex-end; }
+  .bar-label { font-size: 10px; letter-spacing: 0.08em; color: #d8b98a; }
+  .bar-track { width: 140px; height: 12px; background: rgba(24, 14, 8, 0.8); border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; width: 100%; background: #2ecc71; transition: width 0.15s linear; }
+  .progress { position: absolute; left: 50%; transform: translateX(-50%); bottom: 18px; width: 46%; height: 10px; background: rgba(24, 14, 8, 0.72); border: 1px solid rgba(255, 210, 120, 0.35); border-radius: 5px; overflow: visible; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #e87a1a, #ffb347, #ffe6a8); border-radius: 5px; }
+  .progress-marks { position: absolute; top: -18px; left: 0; right: 0; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.08em; color: #d8b98a; }
+  .banner { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); font-size: 20px; font-weight: 800; letter-spacing: 0.06em; color: #ffb347; text-shadow: 0 2px 10px rgba(0,0,0,0.8); opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+  .banner.show { opacity: 1; }
+  .warn { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: 16px; font-weight: 700; letter-spacing: 0.04em; color: #ff5a4a; text-shadow: 0 2px 8px rgba(0,0,0,0.85); opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
+  .warn.show { opacity: 1; }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(16, 10, 6, 0.55); pointer-events: auto; padding: 24px; }
+  .screen h1 { font-size: 64px; margin: 0; line-height: 0.95; letter-spacing: 0.1em; color: #ffb347; text-shadow: 0 3px 18px rgba(0,0,0,0.7); }
+  .screen h2 { font-size: 19px; margin: 10px 0 0; font-weight: 400; letter-spacing: 0.3em; color: #ffe6c4; }
+  .screen p { font-size: 16px; max-width: 580px; line-height: 1.5; color: #f2e8dc; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+  .screen .controls { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin: 20px 0; max-width: 640px; font-size: 13px; color: #d8e6ec; }
+  .screen .controls b { color: #ffb347; }
+  .screen .score-line { font-size: 24px; font-weight: 700; color: #ffb347; letter-spacing: 0.08em; }
+  .big-btn { pointer-events: auto; cursor: pointer; margin-top: 8px; padding: 14px 30px; font-size: 17px; font-weight: 700; letter-spacing: 0.06em; color: #241a12; background: #ffb347; border: none; border-radius: 8px; box-shadow: 0 4px 24px rgba(255,179,71,0.45); }
+  .big-btn:hover { background: #ffc46b; }
+  .best { font-size: 13px; color: #d8b98a; margin-top: 10px; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<canvas id="game" aria-label="Gobble Gambit: run the turkey 1500 metres from the farmyard, through the barn, out the kitchen window, while Farmer Holt chases"></canvas>
+<div id="hud-root"></div>
+<p id="status" role="status" aria-live="polite"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
